@@ -9,6 +9,11 @@ services:
       - ./database/upgrade:/upgrade
       - ./resources:/resources
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3306" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     env_file:
       - database/.env
     ports:
