@@ -1,0 +1,29 @@
+version: '3.3'
+services:
+  database:
+    container_name: database
+    image: mysql:latest
+    volumes:
+      - db_mysql:/var/lib/mysql
+      - ./database/initialize.sql:/docker-entrypoint-initdb.d/initialize.sql
+      - ./database/upgrade:/upgrade
+      - ./resources:/resources
+    restart: unless-stopped
+    env_file:
+      - database/.env
+    ports:
+      - 3306:3306
+
+  backend:
+    container_name: backend
+    build:
+      dockerfile: ../docker/Dockerfile
+      context: ./server/
+    depends_on:
+      - database
+    ports:
+      - 8080:8080
+    restart: always
+
+volumes:
+  db_mysql:
