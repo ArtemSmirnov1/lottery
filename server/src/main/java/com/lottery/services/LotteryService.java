@@ -45,21 +45,21 @@ public class LotteryService {
 
   public Optional<Winner> getWinner() {
     Long participantsCount = participantRepository.getParticipantsCount();
-    if (participantsCount < 2) {                                                                                      //проверка на количество участников
+    if (participantsCount < 2) {                                                                                //participants count check
       throw new NotEnoughParticipantsException(countErrorMsg + " " + participantsCount);
     }
-    Long winnersCount = processTheRandomServicesResponse(
-        randomNumberService.getRandomNumber(participantsMinCount, participantsCount));                                //*результат запроса с рандоматора
-    Long prizeValue = processTheRandomServicesResponse(randomNumberService.getRandomNumber(prizeMin, prizeMax));      //*необходимо обработать т.к. приходит не чистый Long
+    Long winnersCount = processTheRandomServicesResponse(                                                       //*the randomator's response
+        randomNumberService.getRandomNumber(participantsMinCount, participantsCount));                          //*needs to be processed
+    Long prizeValue = processTheRandomServicesResponse(randomNumberService.getRandomNumber(prizeMin, prizeMax));//*because it doesn't provide pure Long value
     Optional<Participant> winnerOptional = Optional.of(participantRepository.getParticipantById(winnersCount));
     if (winnerOptional.isEmpty()) {
       return Optional.empty();
     }
     Winner winner = new Winner(winnerOptional.get(), prizeValue);
-    winnerRepository.insertWinner(winner.getName(), winner.getAge(), winner.getCity(),prizeValue);                    //добавление победителя в таблицу победителей
-    participantRepository.clearTheTable();                                                                            //очистка таблицы
-    participantRepository.resetTheCounter();                                                                          //*обнуление итератора в таблице, т.к.
-    return Optional.of(winner);                                                                                       //*id следующих участников могут быть гораздо больше числа рандоматора
+    winnerRepository.insertWinner(winner.getName(), winner.getAge(), winner.getCity(),prizeValue);              //adding the winner into their table
+    participantRepository.clearTheTable();                                                                      //clearing the table
+    participantRepository.resetTheCounter();                                                                    //*the iterator has to be refreshed
+    return Optional.of(winner);                                                                                 //*so the next participants' ids won't be greater than randomator's values
   }
 
   public Optional<List<Winner>> getAllWinners() {
