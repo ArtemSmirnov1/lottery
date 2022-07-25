@@ -9,3 +9,5 @@
   "age":<возраст>,
   "city":"<город>"
 }
+
+Для запуска бэкенда без докера нужно поменять значение свойства `application.profile` на "local" в файле server/src/main/resources/application.properties
